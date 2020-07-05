@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+// Function component
 // const App = () => {
 //     window.navigator.geolocation.getCurrentPosition(
 //         (position) => console.log(position),
@@ -14,14 +15,35 @@ import ReactDOM from 'react-dom';
 //     );
 // };
 
+// Class Component
 class App extends React.Component {
-    render() {
-        window.navigator.geolocation.getCurrentPosition(
-            (position) => console.log(position),
-            (err) => console.log(err)
-        );
+    constructor(props) {
+        super(props);
 
-        return <div>Latitude: </div>;
+        // This is the only time we direct assignment to this.state
+        this.state = { lat: null, errorMessage: '' }
+
+        window.navigator.geolocation.getCurrentPosition(
+            // Update states
+            position => this.setState(
+                { lat: position.coords.latitude }
+            ),
+            err => this.setState(
+                { errorMessage: err.message }
+            )
+        );
+    }
+
+    render() {
+        if (this.state.errorMessage && !this.state.lat) {
+            return <div>Error: {this.state.errorMessage}</div>
+        }
+
+        if (!this.state.errorMessage && this.state.lat) {
+            return <div>Latitude: {this.state.lat}</div>
+        }
+
+        return <div>Loading...</div>
     }
 }
 
